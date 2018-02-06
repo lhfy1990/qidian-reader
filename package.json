@@ -1,0 +1,17 @@
+{
+  "name": "qidian-reader",
+  "version": "0.0.1",
+  "description": "QiDian Reader.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "postinstall": "bower install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Muxi Qi",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3"
+  }
+}

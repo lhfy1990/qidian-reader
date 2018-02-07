@@ -13,5 +13,9 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qimuxi1990/qidian-reader.git"
   }
 }

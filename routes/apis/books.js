@@ -1,19 +1,18 @@
-'use strict'
-let express = require('express');
-let https = require('https');
-let cheerio = require('cheerio');
-let async = require('async');
-let mongoose = require('mongoose');
-let bookModel = mongoose.model('Book');
-let bookcaseModel = mongoose.model('Bookcase');
+var express = require('express');
+var https = require('https');
+var cheerio = require('cheerio');
+var async = require('async');
+var mongoose = require('mongoose');
+var bookModel = mongoose.model('Book');
+var bookcaseModel = mongoose.model('Bookcase');
 
-let router = express.Router();
+var router = express.Router();
 router.route('/')
     .get((req, res) => {
         // query: /api/objects/?property=textValue&propertyarray=textValue0&propertyarray=textValue1
         // TODO: elastic data type support
-        let query = req.query;
-        let options = { '$and': [] };
+        var query = req.query;
+        var options = { '$and': [] };
         Object.keys(query).forEach((elk, ik, ak) => {
             switch (elk) {
                 case 'bId':
@@ -59,7 +58,7 @@ router.route('/')
         // 200 OK, no matter result is empty or not
     })
     .post((req, res) => {
-        let body = req.body;
+        var body = req.body;
         if (typeof body.bookcaseId === 'undefined') {
             res.status(400);
             res.json();
@@ -98,34 +97,34 @@ router.route('/')
     })
     .put(function(req, res) {
         // not allowed, unless you want to update/replace every resource in the entire collection
-        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
     })
     .patch(function(req, res) {
         // not allowed, unless you want to update/modify every resource in the entire collection
-        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
     })
     .delete(function(req, res) {
         // not allowed, unless you want to delete the whole collection—not often desirable
-        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
     });
 router.route('/:bookId')
     .get((req, res) => {
-        let cookie = req.headers.cookie;
-        let _csrfToken = req.cookies._csrfToken;
-        let bookId = parseInt(req.params.bookId);
+        var cookie = req.headers.cookie;
+        var _csrfToken = req.cookies._csrfToken;
+        var bookId = parseInt(req.params.bookId);
         if (isNaN(bookId)) {
             res.status(400);
             res.json();
         } else {
             async.parallel({
                 book: (callback) => {
-                    let options = {
+                    var options = {
                         host: 'book.qidian.com',
                         path: `/ajax/book/category?_csrfToken=${_csrfToken}&bookId=${bookId}`,
                         method: 'GET',
@@ -133,17 +132,17 @@ router.route('/:bookId')
                             'Cookie': cookie
                         }
                     };
-                    let req = https.request(options, (res) => {
+                    var req = https.request(options, (res) => {
                         if (res.statusCode !== 200) {
                             callback({ statusCode: res.statusCode }, null);
                         } else {
-                            let str_json = '';
+                            var str_json = '';
                             res.on('data', (data) => {
                                 str_json += data;
                             });
                             res.on('end', () => {
                                 try {
-                                    let obj_json = JSON.parse(str_json);
+                                    var obj_json = JSON.parse(str_json);
                                     if (obj_json.code === 0) {
                                         callback(null, obj_json.data);
                                     } else {
@@ -161,7 +160,7 @@ router.route('/:bookId')
                     req.end();
                 },
                 bN: (callback) => {
-                    let options = {
+                    var options = {
                         host: 'book.qidian.com',
                         path: `/info/${bookId}`,
                         method: 'GET',
@@ -169,17 +168,17 @@ router.route('/:bookId')
                             'Cookie': cookie
                         }
                     };
-                    let req = https.request(options, (res) => {
+                    var req = https.request(options, (res) => {
                         if (res.statusCode !== 200) {
                             callback({ statusCode: res.statusCode }, null);
                         } else {
-                            let html = '';
+                            var html = '';
                             res.on('data', (data) => {
                                 html += data;
                             });
                             res.on('end', () => {
-                                let $ = cheerio.load(html);
-                                let book_info = $('.book-info');
+                                var $ = cheerio.load(html);
+                                var book_info = $('.book-info');
                                 if (book_info.length !== 0) {
                                     callback(null, $(book_info).find('h1>em').text());
                                 } else {
@@ -199,7 +198,7 @@ router.route('/:bookId')
                     res.json();
                 } else {
                     res.status(200);
-                    let result_book = result.book;
+                    var result_book = result.book;
                     result_book._id = bookId;
                     result_book.bN = result.bN;
                     res.json(result_book);
@@ -209,14 +208,14 @@ router.route('/:bookId')
     })
     .post(function(req, res) {
         // not allowed
-        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
     })
     .put(function(req, res) {
         // TODO: handle removed fields
-        let bookId = req.params.bookId;
-        let body = req.body;
+        var bookId = req.params.bookId;
+        var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST
         // if (objectId.isNotFound) 404 NOT FOUND
         // if (isNoAuthIntormation) 401 UNAUTHORIZED
@@ -234,8 +233,8 @@ router.route('/:bookId')
     })
     .patch(function(req, res) {
         // TODO: handle removed fields
-        let bookId = req.params.bookId;
-        let body = req.body;
+        var bookId = req.params.bookId;
+        var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST
         // if (objectId.isNotFound) 404 NOT FOUND
         // if (isNoAuthIntormation) 401 UNAUTHORIZED
@@ -252,7 +251,7 @@ router.route('/:bookId')
         });
     })
     .delete(function(req, res) {
-        let bookId = req.params.bookId;
+        var bookId = req.params.bookId;
         // if (objectId.isNotFound) 404 NOT FOUND
         // if (isNoAuthIntormation) 401 UNAUTHORIZED
         // if (isNoRights) 403 FORBIDDEN
@@ -288,18 +287,18 @@ router.route('/:bookId')
     });
 router.route('/:bookId/:chapterId')
     .get((req, res) => {
-        let cookie = req.headers.cookie;
-        let statusCode = null; // 200 OK
-        let bookId = req.params.bookId;
-        let chapterId = req.params.chapterId;
-        let chapter = {
+        var cookie = req.headers.cookie;
+        var statusCode = null; // 200 OK
+        var bookId = req.params.bookId;
+        var chapterId = req.params.chapterId;
+        var chapter = {
             _id: chapterId,
             book: bookId,
             prevId: -1,
             nextId: -1,
             content: []
         };
-        let options = {
+        var options = {
             host: 'vipreader.qidian.com',
             path: `/chapter/${chapter.book}/${chapter._id}`,
             method: 'GET',
@@ -307,25 +306,25 @@ router.route('/:bookId/:chapterId')
                 'Cookie': cookie
             }
         };
-        let count = 0;
-        let hasVIPLimit = true;
+        var count = 0;
+        var hasVIPLimit = true;
         async.until(
             () => { return count >= 9 || !hasVIPLimit; },
             (cb_until) => {
                 count++;
-                let req = https.request(options, (res) => {
+                var req = https.request(options, (res) => {
                     if (res.statusCode !== 200) {
                         cb_until({ statusCode: res.statusCode }, null)
                     } else {
-                        let html = '';
+                        var html = '';
                         res.on('data', (data) => {
                             html += data;
                         });
                         res.on('end', () => {
-                            let $ = cheerio.load(html);
-                            let chapter_header = $(`#chapter-${chapter._id}`);
-                            let chapter_content = $('.read-content');
-                            let vip_limit_wrap = $('.vip-limit-wrap');
+                            var $ = cheerio.load(html);
+                            var chapter_header = $(`#chapter-${chapter._id}`);
+                            var chapter_content = $('.read-content');
+                            var vip_limit_wrap = $('.vip-limit-wrap');
                             if (vip_limit_wrap.length === 0) {
                                 hasVIPLimit = false;
                             }
@@ -333,8 +332,8 @@ router.route('/:bookId/:chapterId')
                                 cb_until({ statusCode: 404 }, null);
                             } else {
                                 if (chapter_header.length !== 0) {
-                                    let data_info = $(chapter_header).attr('data-info');
-                                    let parse_data_info = /\d+\|(-?\d+)\|(-?\d+)\|\d+\|\d+/.exec(data_info);
+                                    var data_info = $(chapter_header).attr('data-info');
+                                    var parse_data_info = /\d+\|(-?\d+)\|(-?\d+)\|\d+\|\d+/.exec(data_info);
                                     if (parse_data_info) {
                                         chapter.prevId = parseInt(parse_data_info[1]);
                                         chapter.nextId = parseInt(parse_data_info[2]);

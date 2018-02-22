@@ -1,7 +1,7 @@
-let bookModel = function(connection) {
-     let mongoose = require('mongoose'); 
+var bookModel = function(connection) {
+     var mongoose = require('mongoose'); 
      /* TODO: this is the schema from QiDian
-     let chpaterSchema = mongoose.Schema({
+     var chpaterSchema = mongoose.Schema({
           uuid: { type: Number, required: true }, // chapter incremental id within this book
           cN: { type: String }, // chapter name; required unknown
           uT: { type: Date }, // upload time; required unknown
@@ -10,7 +10,7 @@ let bookModel = function(connection) {
           id: { type: Number, required: true }, // chapter _id
           sS: { type: Number, enum: [0, 1] } // subscription status; required, enum unknown
      }, { _id: false });
-     let volumeSchema = mongoose.Schema({
+     var volumeSchema = mongoose.Schema({
           vId: { type: Number, required: true },
           cCnt: { type: Number }, // chapter count; required, range unknown
           vS: { type: Number, required: true, enum: [0, 1] }, // vip status; required, enum unknown
@@ -20,7 +20,7 @@ let bookModel = function(connection) {
           hS: { type: Boolean }, // unkown, looks to be true on vip volumes
           cs: { type: [chpaterSchema] } // chapters; required unknown
      }, { _id: false });
-     let bookSchema = mongoose.Schema({
+     var bookSchema = mongoose.Schema({
           _id: { type: Number, required: true },
           bN: { type: String, required: false },
           isPublication: { type: Number, enum: [0] }, // required, enum unknown
@@ -35,7 +35,7 @@ let bookModel = function(connection) {
           vs: { type: [volumeSchema] } // volumes; required unknown
      });
      */
-     let bookSchema = mongoose.Schema({
+     var bookSchema = mongoose.Schema({
           bId: { type: Number, required: true, unique: true },
           name: { type: String, required: false, trim: true },
           author: { type: String, required: false, trim: true },

@@ -1,18 +1,17 @@
-'use strict'
-let express = require('express');
-let https = require('https');
-let cheerio = require('cheerio');
-let async = require('async');
-let mongoose = require('mongoose');
-let userModel = mongoose.model('User');
-let bookcaseModel = mongoose.model('Bookcase');
+var express = require('express');
+var https = require('https');
+var cheerio = require('cheerio');
+var async = require('async');
+var mongoose = require('mongoose');
+var userModel = mongoose.model('User');
+var bookcaseModel = mongoose.model('Bookcase');
 
-let router = express.Router();
+var router = express.Router();
 router.route('/')
     .get((req, res) => {
         // query: /api/objects/?property=textValue&propertyarray=textValue0&propertyarray=textValue1
-        let query = req.query;
-        let options = {};
+        var query = req.query;
+        var options = {};
         Object.keys(query).forEach((elk, ik, ak) => {
             if (Array.isArray(query[elk])) {
                 // TODO: handle non string fields here
@@ -37,7 +36,7 @@ router.route('/')
         // 200 OK, no matter result is empty or not
     })
     .post((req, res) => {
-        let body = req.body;
+        var body = req.body;
         if (typeof body.userId === 'undefined') {
             res.status(400);
             res.json();
@@ -76,25 +75,25 @@ router.route('/')
     })
     .put(function(req, res) {
         // not allowed, unless you want to update/replace every resource in the entire collection
-        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
     })
     .patch(function(req, res) {
         // not allowed, unless you want to update/modify every resource in the entire collection
-        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
     })
     .delete(function(req, res) {
         // not allowed, unless you want to delete the whole collection—not often desirable
-        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
     });
 router.route('/:bookcaseId')
     .get((req, res) => {
-        let bookcaseId = req.params.bookcaseId;
+        var bookcaseId = req.params.bookcaseId;
         bookcaseModel.findById(bookcaseId).populate('books').exec((err, bookcase) => {
             if (err) {
                 res.status(400);
@@ -107,14 +106,14 @@ router.route('/:bookcaseId')
     })
     .post(function(req, res) {
         // not allowed
-        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
     })
     .put(function(req, res) {
         // TODO: handle removed fields
-        let bookcaseId = req.params.bookcaseId;
-        let body = req.body;
+        var bookcaseId = req.params.bookcaseId;
+        var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST
         // if (objectId.isNotFound) 404 NOT FOUND
         // if (isNoAuthIntormation) 401 UNAUTHORIZED
@@ -132,8 +131,8 @@ router.route('/:bookcaseId')
     })
     .patch(function(req, res) {
         // TODO: handle removed fields
-        let bookcaseId = req.params.bookcaseId;
-        let body = req.body;
+        var bookcaseId = req.params.bookcaseId;
+        var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST
         // if (objectId.isNotFound) 404 NOT FOUND
         // if (isNoAuthIntormation) 401 UNAUTHORIZED
@@ -150,7 +149,7 @@ router.route('/:bookcaseId')
         });
     })
     .delete(function(req, res) {
-        let bookcaseId = req.params.bookcaseId;
+        var bookcaseId = req.params.bookcaseId;
         // if (objectId.isNotFound) 404 NOT FOUND
         // if (isNoAuthIntormation) 401 UNAUTHORIZED
         // if (isNoRights) 403 FORBIDDEN

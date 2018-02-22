@@ -1,13 +1,11 @@
-'use strict'
-
 // requires
-let path = require('path');
-let express = require('express');
-let bodyParser = require('body-parser');
-let cookieParser = require('cookie-parser');
-let app = express();
-let mongoose = require('mongoose');
-let router_api;
+var path = require('path');
+var express = require('express');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var app = express();
+var mongoose = require('mongoose');
+var router_api;
 
 // configs
 app.use(bodyParser.urlencoded({
@@ -15,16 +13,16 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-let port = process.env.PORT || 8080;
+var port = process.env.PORT || 8080;
 
 // mongoose.set('debug', true);
-// let mongodb = 'mongodb://localhost/qidian-reader';
-let mongodb = 'mongodb://qruser:qruser@mongodb/qidian-reader';
+// var mongodb = 'mongodb://localhost/qidian-reader';
+var mongodb = 'mongodb://qruser:qruser@mongodb/qidian-reader';
 mongoose.connect(mongodb, { autoIndex: false });
-let db = mongoose.connection;
-let bookModel = require('./models/book.js')(db);
-let bookcaseModel = require('./models/bookcase.js')(db);
-let userModel = require('./models/user.js')(db);
+var db = mongoose.connection;
+var bookModel = require('./models/book.js')(db);
+var bookcaseModel = require('./models/bookcase.js')(db);
+var userModel = require('./models/user.js')(db);
 
 // execution
 db.on('error', console.error.bind(console, 'connection error:'));

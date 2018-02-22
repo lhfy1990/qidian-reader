@@ -1,17 +1,16 @@
-'use strict'
-let express = require('express');
-let https = require('https');
-let cheerio = require('cheerio');
-let async = require('async');
-let mongoose = require('mongoose');
-let userModel = mongoose.model('User');
+var express = require('express');
+var https = require('https');
+var cheerio = require('cheerio');
+var async = require('async');
+var mongoose = require('mongoose');
+var userModel = mongoose.model('User');
 
-let router = express.Router();
+var router = express.Router();
 router.route('/')
     .get((req, res) => {
         // query: /api/objects/?property=textValue&propertyarray=textValue0&propertyarray=textValue1
-        let query = req.query;
-        let options = {};
+        var query = req.query;
+        var options = {};
         Object.keys(query).forEach((elk, ik, ak) => {
             if (Array.isArray(query[elk])) {
                 // TODO: handle non string fields here
@@ -37,14 +36,14 @@ router.route('/')
     })
     .post((req, res) => {
         // TODO: this is customized for signup, no RESTFUL
-        let body = req.body;
+        var body = req.body;
         userModel.create(body, (err, user) => {
             if (err) {
                 // TODO: handle 400, 407 error
                 res.status(400);
                 res.json();
             } else {
-                let res_user = JSON.parse(JSON.stringify(user));
+                var res_user = JSON.parse(JSON.stringify(user));
                 delete res_user.password;
                 res.status(201);
                 res.json(res_user);
@@ -71,7 +70,7 @@ router.route('/')
     });
 router.route('/:userId')
     .get((req, res) => {
-        let userId = req.params.userId;
+        var userId = req.params.userId;
         userModel.findById(userId).populate({path: 'bookcases', populate: {path: 'books'}}).exec((err, user) => {
             if (err) {
                 res.status(400);
@@ -84,8 +83,8 @@ router.route('/:userId')
     })
     .post(function(req, res) {
         // TODO: this is customized for login, no RESTFUL
-        let username = req.params.userId;
-        let body = req.body;
+        var username = req.params.userId;
+        var body = req.body;
         if (typeof body.password === 'undefined') {
             res.status(401);
             res.json();
@@ -99,7 +98,7 @@ router.route('/:userId')
                         res.status(403);
                         res.json();
                     } else {
-                        let res_user = JSON.parse(JSON.stringify(user));
+                        var res_user = JSON.parse(JSON.stringify(user));
                         delete res_user.password;
                         res.status(200);
                         res.json(res_user);

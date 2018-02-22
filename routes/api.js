@@ -5,6 +5,7 @@ let async = require('async');
 
 let router_books = require('./apis/books.js');
 let router_bookcases = require('./apis/bookcases.js');
+let router_users = require('./apis/users.js');
 
 // api
 let router = express.Router();
@@ -43,5 +44,6 @@ router.route('/objects/:objectId')
   });
 router.use('/books', router_books);
 router.use('/bookcases', router_bookcases);
+router.use('/users', router_users);
 
 module.exports = router;

@@ -18,3 +18,7 @@ An example FullStack RESTful Design using NodeJS and Express. Front-end takes An
 * [REST API Quick Tips](http://www.restapitutorial.com/lessons/restquicktips.html)
 * [Build a RESTful API Using Node and Express 4](https://scotch.io/tutorials/build-a-restful-api-using-node-and-express-4)
 * [Dynamically Loading Controllers and Views with AngularJS/$controllerProvider and RequireJS](https://weblogs.asp.net/dwahlin/dynamically-loading-controllers-and-views-with-angularjs-and-requirejs)
+
+## TODO
+* upate last read chapter on QiDian Server.
+* pull bookcase from QiDian Server.

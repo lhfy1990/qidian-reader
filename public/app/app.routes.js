@@ -1,19 +1,20 @@
 'use strict';
 
-var app = angular.module('restApp', ['ngRoute', 'modules']);
+let app = angular.module('restApp', ['ngRoute', 'modules']);
 
-app.config(function($routeProvider) {
+app.config(($routeProvider) => {
   $routeProvider
     .when('/home', {
       templateUrl: 'app/components/home/homeView.html'
     })
-    .when('/test', {
-      templateUrl: 'app/components/test/testView.html'
+    .when('/user', {
+      templateUrl: 'app/components/user/userView.html'
     })
-    .when('/api', {
-      templateUrl: 'app/components/api/apiView.html'
-    }).
-  otherwise({
-    redirectTo: '/home'
-  });
+    .when('/books/:bookId', {
+      templateUrl: 'app/components/book/bookView.html',
+      controller: 'bookController as book'
+    })
+    .otherwise({
+      redirectTo: '/home'
+    });
 });

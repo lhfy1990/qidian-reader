@@ -2,144 +2,292 @@ let express = require('express');
 let https = require('https');
 let cheerio = require('cheerio');
 let async = require('async');
-
-// TODO temp configs
-let _csrfToken = 'XZqw9QcOhH0soDEUi7VLy968QXwvgAgTiFlxaduj';
-let ywkey = 'ywq5K5S7iNNh';
-let ywguid = '800194644077';
-let cookie = `_csrfToken=${_csrfToken};ywkey=${ywkey};ywguid=${ywguid}`;
-let cnt = 0;
+let mongoose = require('mongoose');
+let bookModel = mongoose.model('Book');
+let bookcaseModel = mongoose.model('Bookcase');
 
 let router = express.Router();
 router.route('/')
     .get((req, res) => {
         // query: /api/objects/?property=textValue&propertyarray=textValue0&propertyarray=textValue1
+        // TODO: elastic data type support
         let query = req.query;
-        let objects = [];
-        // if (query.isInvalid) 400 BAD REQUEST
-        // if (isNoAuthIntormation) 401 UNAUTHORIZED
-        // if (isNoRights) 403 FORBIDDEN
-        let statusCode = 200; // 200 OK, no matter result is empty or not
-        res.status(statusCode);
-        res.json(objects);
-    });
-router.route('/:bookId')
-    .get((req, res) => {
-        let bookId = req.params.bookId;
-        let book = {
-            _id: bookId,
-            readChapterId: 0,
-            readProgress: ''
-        };
-        async.waterfall([
-            (callback) => {
-                // TODO some books do not return chapters, example book 1004588586
-                let options = {
-                    host: 'book.qidian.com',
-                    path: `/info/${book._id}`,
-                    method: 'GET',
-                    headers: {
-                        'Cookie': cookie
-                    }
-                };
-                let req = https.request(options, (res) => {
-                    if (res.statusCode !== 200) {
-                        callback({ statusCode: res.statusCode }, null);
+        let options = { '$and': [] };
+        Object.keys(query).forEach((elk, ik, ak) => {
+            switch (elk) {
+                case 'bId':
+                    if (Array.isArray(query[elk])) {
+                        options['$and'].push({ 'bId': { '$in': query[elk].map((elm, i, a) => parseInt(elm)) } });
                     } else {
-                        let html = '';
-                        res.on('data', (data) => {
-                            html += data;
-                        });
-                        res.on('end', () => {
-                            let $ = cheerio.load(html);
-                            if ($('.book-info').length !== 0) {
-                                callback(null, $('.volume').find('.cf>li>a').map((i, el) => {
-                                    let chapter = {
-                                        href: $(el).attr('href'),
-                                        title: $(el).text(),
-                                    };
-                                    chapter.href = $(el).attr('href');
-                                    let parse_href = /.*chapter\/([0-9]*)\/([0-9]*)/.exec(chapter.href);
-                                    let parse_title = /首发时间：(.*) 章节字数：(.*)/.exec($(el).attr('title'));
-                                    if (parse_href) {
-                                        chapter._id = parse_href[2];
-                                    };
-                                    if (parse_title) {
-                                        chapter.utcTime = new Date(parse_title[1] + '+0800');
-                                        chapter.charCount = parse_title[2]
-                                    }
-                                    return chapter;
-                                }).get());
-                            } else {
-                                callback({ statusCode: 404 }, null);
-                            }
-                        });
+                        options['$and'].push({ 'bId': parseInt(query[elk]) });
                     }
-                });
-                req.on('error', (err) => {
-                    callback({ statusCode: 404 }, null);
-                });
-                req.end();
-            },
-            (chapters, callback) => {
-                let options = {
-                    host: 'book.qidian.com',
-                    path: `/ajax/book/GetReadStatus?_csrfToken=${_csrfToken}&bookId=${book._id}`,
-                    method: 'GET',
-                    headers: {
-                        'Cookie': cookie
+                    break;
+                case 'name':
+                    if (Array.isArray(query[elk])) {
+                        options['$and'].push({ '$or': query[elk].map((elm, i, a) => { return { 'name': { '$regex': elm } }; }) });
+                    } else {
+                        options['$and'].push({ 'name': { '$regex': query[elk] } });
                     }
-                };
-                let isSuccess = false;
-                let count = 0;
-                async.until(
-                    () => { return isSuccess || count > 30; },
-                    (cb_until) => {
-                        let req = https.request(options, (res) => {
-                            if (res.statusCode !== 200) {
-                                cb_until({ statusCode: res.statusCode }, null);
-                            } else {
-                                let json = '';
-                                res.on('data', (data) => {
-                                    json += data;
-                                });
-                                res.on('end', () => {
-                                    let data = JSON.parse(json).data;
-                                    count++;
-                                    if (typeof data.isInBookShelf !== 'undefined') {
-                                        isSuccess = true;
-                                    }
-                                    cb_until(null, { readChapterId: data.readChapterId ? data.readChapterId : null, readProgress: data.readProgress ? data.readProgress : null });
-                                });
-                            }
-                        });
-                        req.on('error', (err) => {
-                            cb_until({ statusCode: 404 }, null);
-                        });
-                        req.end();
-                    },
-                    (err, result) => {
-                        callback(err, { chapters: chapters, read: result });
-                    });
+                    break;
+                case 'author':
+                    if (Array.isArray(query[elk])) {
+                        options['$and'].push({ '$or': query[elk].map((elm, i, a) => { return { 'author': { '$regex': elm } }; }) });
+                    } else {
+                        options['$and'].push({ 'author': { '$regex': query[elk] } });
+                    }
+                    break;
+                default:
+                    break;
             }
-        ], (err, result) => {
+            if (options['$and'].length === 0) {
+                options = {};
+            }
+        });
+        bookModel.find(options).exec((err, books) => {
             if (err) {
-                res.status(err.statusCode);
-                res.json();
-            } else if (!result) {
-                res.status(404);
+                res.status(400);
                 res.json();
             } else {
                 res.status(200);
-                book.chapters = result.chapters;
-                book.readChapterId = result.read.readChapterId ? result.read.readChapterId : null;
-                book.readProgress = result.read.readProgress ? result.read.readProgress : null;
-                res.json(book);
+                res.json(books);
             }
         });
+        // if (query.isInvalid) 400 BAD REQUEST
+        // if (isNoAuthIntormation) 401 UNAUTHORIZED
+        // if (isNoRights) 403 FORBIDDEN
+        // 200 OK, no matter result is empty or not
+    })
+    .post((req, res) => {
+        let body = req.body;
+        if (typeof body.bookcaseId === 'undefined') {
+            res.status(400);
+            res.json();
+        } else {
+            async.waterfall([
+                (callback) => {
+                    bookModel.create(body.book ? body.book : {}, (err, book) => {
+                        if (err) {
+                            // TODO: handle 400, 407 error
+                            callback(err, null);
+                        } else {
+                            callback(null, book);
+                        }
+                    });
+                },
+                (book, callback) => {
+                    bookcaseModel.findByIdAndUpdate(body.bookcaseId, { '$push': { books: book._id } }).exec((err, raw) => {
+                        if (err) {
+                            callback(err, null);
+                        } else {
+                            callback(null, book);
+                        }
+                    });
+                }
+            ], (err, book) => {
+                if (err) {
+                    // TODO: handle 400, 407 error
+                    res.status(400);
+                    res.json();
+                } else {
+                    res.status(201);
+                    res.json(book);
+                }
+            });
+        }
+    })
+    .put(function(req, res) {
+        // not allowed, unless you want to update/replace every resource in the entire collection
+        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        res.status(statusCode);
+        res.json();
+    })
+    .patch(function(req, res) {
+        // not allowed, unless you want to update/modify every resource in the entire collection
+        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        res.status(statusCode);
+        res.json();
+    })
+    .delete(function(req, res) {
+        // not allowed, unless you want to delete the whole collection—not often desirable
+        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        res.status(statusCode);
+        res.json();
+    });
+router.route('/:bookId')
+    .get((req, res) => {
+        let cookie = req.headers.cookie;
+        let _csrfToken = req.cookies._csrfToken;
+        let bookId = parseInt(req.params.bookId);
+        if (isNaN(bookId)) {
+            res.status(400);
+            res.json();
+        } else {
+            async.parallel({
+                book: (callback) => {
+                    let options = {
+                        host: 'book.qidian.com',
+                        path: `/ajax/book/category?_csrfToken=${_csrfToken}&bookId=${bookId}`,
+                        method: 'GET',
+                        headers: {
+                            'Cookie': cookie
+                        }
+                    };
+                    let req = https.request(options, (res) => {
+                        if (res.statusCode !== 200) {
+                            callback({ statusCode: res.statusCode }, null);
+                        } else {
+                            let str_json = '';
+                            res.on('data', (data) => {
+                                str_json += data;
+                            });
+                            res.on('end', () => {
+                                try {
+                                    let obj_json = JSON.parse(str_json);
+                                    if (obj_json.code === 0) {
+                                        callback(null, obj_json.data);
+                                    } else {
+                                        callback({ statusCode: 404 }, null);
+                                    }
+                                } catch (e) {
+                                    callback({ statusCode: 404 }, null);
+                                }
+                            });
+                        }
+                    });
+                    req.on('error', (err) => {
+                        callback({ statusCode: 404 }, null);
+                    });
+                    req.end();
+                },
+                bN: (callback) => {
+                    let options = {
+                        host: 'book.qidian.com',
+                        path: `/info/${bookId}`,
+                        method: 'GET',
+                        headers: {
+                            'Cookie': cookie
+                        }
+                    };
+                    let req = https.request(options, (res) => {
+                        if (res.statusCode !== 200) {
+                            callback({ statusCode: res.statusCode }, null);
+                        } else {
+                            let html = '';
+                            res.on('data', (data) => {
+                                html += data;
+                            });
+                            res.on('end', () => {
+                                let $ = cheerio.load(html);
+                                let book_info = $('.book-info');
+                                if (book_info.length !== 0) {
+                                    callback(null, $(book_info).find('h1>em').text());
+                                } else {
+                                    callback({ statusCode: 404 }, null);
+                                }
+                            });
+                        }
+                    });
+                    req.on('error', (err) => {
+                        callback({ statusCode: 404 }, null);
+                    });
+                    req.end();
+                }
+            }, (err, result) => {
+                if (err) {
+                    res.status(err.statusCode);
+                    res.json();
+                } else {
+                    res.status(200);
+                    let result_book = result.book;
+                    result_book._id = bookId;
+                    result_book.bN = result.bN;
+                    res.json(result_book);
+                }
+            });
+        }
+    })
+    .post(function(req, res) {
+        // not allowed
+        let statusCode = 405; // 405 METHOD NOT ALLOWED
+        res.status(statusCode);
+        res.json();
+    })
+    .put(function(req, res) {
+        // TODO: handle removed fields
+        let bookId = req.params.bookId;
+        let body = req.body;
+        // if (body.isInvalid) 400 BAD REQUEST
+        // if (objectId.isNotFound) 404 NOT FOUND
+        // if (isNoAuthIntormation) 401 UNAUTHORIZED
+        // if (isNoRights) 403 FORBIDDEN
+        bookModel.findByIdAndUpdate(bookId, body).exec((err, raw) => {
+            if (err) {
+                // TODO: handle 404 error
+                res.status(400);
+                res.json();
+            } else {
+                res.status(204);
+                res.json();
+            }
+        });
+    })
+    .patch(function(req, res) {
+        // TODO: handle removed fields
+        let bookId = req.params.bookId;
+        let body = req.body;
+        // if (body.isInvalid) 400 BAD REQUEST
+        // if (objectId.isNotFound) 404 NOT FOUND
+        // if (isNoAuthIntormation) 401 UNAUTHORIZED
+        // if (isNoRights) 403 FORBIDDEN
+        bookModel.findByIdAndUpdate(bookId, body).exec((err, raw) => {
+            if (err) {
+                // TODO: handle 404 error
+                res.status(400);
+                res.json();
+            } else {
+                res.status(204);
+                res.json();
+            }
+        });
+    })
+    .delete(function(req, res) {
+        let bookId = req.params.bookId;
+        // if (objectId.isNotFound) 404 NOT FOUND
+        // if (isNoAuthIntormation) 401 UNAUTHORIZED
+        // if (isNoRights) 403 FORBIDDEN
+        async.waterfall([
+                (callback) => {
+                    bookcaseModel.update({}, { '$pull': { books: bookId } }, { multi: true }).exec((err, raw) => {
+                        if (err) {
+                            callback(err);
+                        } else {
+                            callback(null);
+                        }
+                    });
+                },
+                (callback) => {
+                    bookModel.findByIdAndRemove(bookId).exec((err) => {
+                        if (err) {
+                            callback(err, null);
+                        } else {
+                            callback(null, null);
+                        }
+                    });
+                }
+            ],
+            (err, result) => {
+                if (err) {
+                    res.status(404);
+                    res.json();
+                } else {
+                    res.status(204);
+                    res.json();
+                }
+            });
     });
 router.route('/:bookId/:chapterId')
     .get((req, res) => {
+        let cookie = req.headers.cookie;
         let statusCode = null; // 200 OK
         let bookId = req.params.bookId;
         let chapterId = req.params.chapterId;

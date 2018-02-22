@@ -1,3 +1,5 @@
+'use strict'
+
 // requires
 let path = require('path');
 let express = require('express');

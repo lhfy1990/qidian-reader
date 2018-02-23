@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
         <ol class="breadcrumb">
-            <li class="active">Me</li>
+            <li class="active">我的</li>
         </ol>
     </div>
 </div>
@@ -11,30 +11,30 @@
             <div class="panel-heading">
                 <span class="panel-title">{{user.user.username?user.user.username:'Sign In Required'}}</span>
                 <div class="btn-group btn-group-xs pull-right">
-                    <button class="btn btn-xs btn-warning" ng-if="user.user" ng-click="user.signOut()">Sign Out</button>
+                    <button class="btn btn-xs btn-warning" ng-if="user.user" ng-click="user.signOut()">登出</button>
                 </div>
             </div>
             <div class="panel-body">
                 <form class="form-inline" ng-if="!user.user">
                     <div class="form-group" ng-class="{'has-error': user.credential.username===''}">
-                        <label class="sr-only" for="username">Username</label>
+                        <label class="sr-only" for="username">用户名：</label>
                         <input type="text" class="form-control input-sm" id="username" placeholder="Username" ng-model="user.credential.username">
                     </div>
                     <div class="form-group" ng-class="{'has-error': user.credential.password===''}">
-                        <label class="sr-only" for="password">Password</label>
+                        <label class="sr-only" for="password">密码：</label>
                         <input type="password" class="form-control input-sm" id="password" placeholder="Password" ng-model="user.credential.password">
                     </div>
                     <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-sm btn-warning" ng-click="user.signUp(user.credential)">Sign Up</button>
-                        <button type="submit" class="btn btn-sm btn-success" ng-click="user.signIn(user.credential)">Sign in</button>
+                        <button type="button" class="btn btn-sm btn-warning" ng-click="user.signUp(user.credential)">注册</button>
+                        <button type="submit" class="btn btn-sm btn-success" ng-click="user.signIn(user.credential)">登录</button>
                     </div>
                 </form>
                 <form class="form-group" ng-if="user.user">
-                    <label class="sr-only" for="user-cookies">User Cookies (String)</label>
+                    <label class="sr-only" for="user-cookies">用户Cookies（字符串）：</label>
                     <div class="input-group">
-                        <input type="text" class="form-control input-sm" id="user-cookies" name="user-cookies" aria-describedby="user-cookies" ng-model="user.cookies" placeholder="User Cookies (String)">
+                        <input type="text" class="form-control input-sm" id="user-cookies" name="user-cookies" aria-describedby="user-cookies" ng-model="user.cookies" placeholder="用户Cookies（字符串）">
                         <span class="input-group-btn">
-                            <button class="btn btn-sm btn-warning" type="submit" ng-click="user.setCookies(user.cookies)">Set Cookies!</button>
+                            <button class="btn btn-sm btn-warning" type="submit" ng-click="user.setCookies(user.cookies)">设置Cookies!</button>
                         </span>
                     </div>
                 </form>

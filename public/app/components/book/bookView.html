@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
         <ol class="breadcrumb">
-            <li><a href="#">Books</a></li>
+            <li><a href="#">书籍</a></li>
             <li class="active">{{book.book.bN?book.book.bN:book.book._id}}</li>
         </ol>
     </div>
@@ -10,12 +10,12 @@
     <div class="row">
         <div class="col-lg-4 col-md-6 col-xs-12" ng-class="{'hidden': book.volume.vId}">
             <div class="panel panel-default">
-                <div class="panel-heading">Volumes</div>
-                <div class="panel-body" ng-show="!book.book.bN&&!book.book.isNotFound">Now Loading ...</div>
-                <div class="panel-body" ng-show="book.book.isNotFound">404 Not Found. Please check book ID or try again later</div>
+                <div class="panel-heading">卷</div>
+                <div class="panel-body" ng-show="!book.book.bN&&!book.book.isNotFound">加载中……</div>
+                <div class="panel-body" ng-show="book.book.isNotFound">404 未找到。请检查书籍ID或稍后重试。</div>
                 <div class="list-group">
                     <button type="button" class="list-group-item" ng-repeat="volume in book.book.vs | limitTo: book.page_size_volume: (book.page_volume-1)*book.page_size_volume" ng-click="book.initVolume(volume);" ng-class="{'list-group-item-warning': volume.vId === book.last_id_volume}">
-                    <h5>{{volume.vN| limitTo: 11}}{{chapter.vN.length>11?'...':''}}<span class="badge">{{volume.cCnt}}</span><span class="label pull-right" ng-class="{'label-success': volume.vS === 0,'label-warning': volume.vS === 1}">{{ volume.vS === 1?'VIP':'Free'}}</span></h5>
+                    <h5>{{volume.vN| limitTo: 11}}{{chapter.vN.length>11?'...':''}}<span class="badge">{{volume.cCnt}}</span><span class="label pull-right" ng-class="{'label-success': volume.vS === 0,'label-warning': volume.vS === 1}">{{ volume.vS === 1?'VIP':'免费'}}</span></h5>
                     </button>
                 </div>
                 <div class="text-center" ng-if="book.book.bN">
@@ -29,7 +29,7 @@
                 <div class="panel-heading">
                     <span>{{book.volume.vN?book.volume.vN:book.volume.vId}}</span>
                     <div class="btn-group btn-group-xs pull-right">
-                        <button class="btn btn-xs btn-link" ng-click="book.initVolume();">&lt;Back</button>
+                        <button class="btn btn-xs btn-link" ng-click="book.initVolume();">&lt;返回</button>
                     </div>
                 </div>
                 <div class="list-group">
@@ -48,17 +48,17 @@
                 <div class="panel-heading">
                     <span>{{book.chapter.cN}}</span>
                     <div class="btn-group btn-group-xs pull-right">
-                        <button class="visible-xs-inline visible-sm-inline btn btn-xs btn-link" ng-click="book.initChapter()">&lt;Back</button>
+                        <button class="visible-xs-inline visible-sm-inline btn btn-xs btn-link" ng-click="book.initChapter()">&lt;返回</button>
                     </div>
-                </div>
-                <div class="panel-body" ng-show="!book.chapter.content">Now Loading ...</div>
-                <div class="panel-body" ng-show="book.chapter.isNotFound">404 Not Found. Please check book ID or try again later</div>
-                <div class="panel-body">
-                    <p ng-repeat="paragraph in book.chapter.content | limitTo: book.page_size_content: (book.page_content-1)*book.page_size_content">{{paragraph}}</p>
                 </div>
                 <div  class="text-center" ng-if="book.chapter.content">
                     <ul uib-pagination total-items="book.chapter.content.length" ng-model="book.page_content" items-per-page="book.page_size_content" max-size="2" class="pagination-sm" boundary-link-numbers="true" rotate="false" previous-text="&lsaquo;" next-text="&rsaquo;">
                     </ul>
+                </div>
+                <div class="panel-body" ng-show="!book.chapter.content">加载中……</div>
+                <div class="panel-body" ng-show="book.chapter.isNotFound">404 未找到。请检查书籍ID或稍后重试。</div>
+                <div class="panel-body">
+                    <p ng-repeat="paragraph in book.chapter.content | limitTo: book.page_size_content: (book.page_content-1)*book.page_size_content">{{paragraph}}</p>
                 </div>
             </div>
         </div>

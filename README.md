@@ -76,7 +76,8 @@ To host an OpenShift app at a specified url, the following steps should be taken
 * [OpenShift](https://www.openshift.com/)
 
 ## TODOs
-* update last read chapter on QiDian Server.
+* deploy on HTTPS, and adjust Github link when complete
 * apply more secured authentication.
-* deploy on HTTPS.
+* add notifications.
+* update last read chapter on QiDian Server.
 * pull bookcase from QiDian Server.

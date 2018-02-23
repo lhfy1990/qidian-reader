@@ -30,8 +30,8 @@ An Brief Qidian Reader app based on Bootstrap + Angular UI Bootstrap, AngularJS,
 ## Initialization
 1. Make sure you have node installed with npm.
 1. Run `npm install` under the repository folder
-  * It will handle node modules, bower, and bower modules.
-  * Read .bowerrc and package.json for detail.
+    * It will handle node modules, bower, and bower modules.
+    * Read .bowerrc and package.json for detail.
 1. For local debuging, adjust server.js to point to your local mongoDB.
 1. For local nodemon, use nodemon.json as the config.
 

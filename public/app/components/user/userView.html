@@ -9,7 +9,7 @@
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <span class="panel-title">{{user.user.username?user.user.username:'Sign In Required'}}</span>
+                <span class="panel-title">{{user.user.username?user.user.username:'请登录'}}</span>
                 <div class="btn-group btn-group-xs pull-right">
                     <button class="btn btn-xs btn-warning" ng-if="user.user" ng-click="user.signOut()">登出</button>
                 </div>

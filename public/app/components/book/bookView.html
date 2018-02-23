@@ -52,13 +52,16 @@
                     </div>
                 </div>
                 <div  class="text-center" ng-if="book.chapter.content">
-                    <ul uib-pagination total-items="book.chapter.content.length" ng-model="book.page_content" items-per-page="book.page_size_content" max-size="2" class="pagination-sm" boundary-link-numbers="true" rotate="false" previous-text="&lsaquo;" next-text="&rsaquo;">
+                    <ul uib-pager total-items="book.chapter.content.length" ng-model="book.page_content" items-per-page="book.page_size_content" previous-text="&lsaquo;&lsaquo; 上一页" next-text="下一页 &rsaquo;&rsaquo;">
                     </ul>
                 </div>
                 <div class="panel-body" ng-show="!book.chapter.content">加载中……</div>
                 <div class="panel-body" ng-show="book.chapter.isNotFound">404 未找到。请检查书籍ID或稍后重试。</div>
                 <div class="panel-body">
                     <p ng-repeat="paragraph in book.chapter.content | limitTo: book.page_size_content: (book.page_content-1)*book.page_size_content">{{paragraph}}</p>
+                </div>
+                <div class="panel-footer text-center" ng-show="book.chapter.content&&!book.chapter.isNotFound">
+                    <span>第{{book.page_content}}页</span>
                 </div>
             </div>
         </div>

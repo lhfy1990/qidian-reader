@@ -59,6 +59,7 @@ angular.module('book')
                     chapter.cN = this.chapter.cN;
                     chapter.isNotFound = false;
                     this.chapter = chapter;
+                    this.page_content = 1;
                 },
                 (error) => {
                     this.chapter.isNotFound = true;
@@ -75,6 +76,7 @@ angular.module('book')
                 _id: null,
                 isNotFound: false
             };
+            this.page_content = 1;
         }
         this.initVolume = (volume = null) => {
             if (volume === null) {

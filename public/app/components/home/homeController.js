@@ -16,6 +16,7 @@ angular.module('home')
             this.bookcase = JSON.parse(JSON.stringify(bookcase));
         }
         this.addBookcase = () => {
+            // TODO: no RESTful
             $http({
                 method: 'POST',
                 url: `/api/bookcases`,
@@ -54,6 +55,7 @@ angular.module('home')
             }, (error) => {});
         };
         this.removeBookcase = (bookcase) => {
+            // TODO: no RESTful
             $http({
                 method: 'DELETE',
                 url: `/api/bookcases/${bookcase._id}`
@@ -105,6 +107,7 @@ angular.module('home')
         this.addBook = (book, bookcase) => {
             let book_c = JSON.parse(JSON.stringify(book));
             if (!book_c._id) {
+                // TODO: no RESTful
                 $http({
                     method: 'POST',
                     url: `/api/books/`,

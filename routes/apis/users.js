@@ -1,7 +1,6 @@
 var express = require('express');
 var https = require('https');
 var cheerio = require('cheerio');
-var async = require('async');
 var mongoose = require('mongoose');
 var userModel = mongoose.model('User');
 
@@ -109,7 +108,6 @@ router.route('/:userId')
         }
     })
     .put(function(req, res) {
-        // TODO: handle removed fields
         var userId = req.params.userId;
         var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST
@@ -128,7 +126,6 @@ router.route('/:userId')
         });
     })
     .patch(function(req, res) {
-        // TODO: handle removed fields
         var userId = req.params.userId;
         var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST

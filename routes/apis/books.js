@@ -58,6 +58,7 @@ router.route('/')
         // 200 OK, no matter result is empty or not
     })
     .post((req, res) => {
+        // TODO: no RESTful
         var body = req.body;
         if (typeof body.bookcaseId === 'undefined') {
             res.status(400);
@@ -213,7 +214,6 @@ router.route('/:bookId')
         res.json();
     })
     .put(function(req, res) {
-        // TODO: handle removed fields
         var bookId = req.params.bookId;
         var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST
@@ -232,7 +232,6 @@ router.route('/:bookId')
         });
     })
     .patch(function(req, res) {
-        // TODO: handle removed fields
         var bookId = req.params.bookId;
         var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST
@@ -251,6 +250,7 @@ router.route('/:bookId')
         });
     })
     .delete(function(req, res) {
+        // TODO: no RESTful
         var bookId = req.params.bookId;
         // if (objectId.isNotFound) 404 NOT FOUND
         // if (isNoAuthIntormation) 401 UNAUTHORIZED

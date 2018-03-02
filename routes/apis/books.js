@@ -58,52 +58,20 @@ router.route('/')
         // 200 OK, no matter result is empty or not
     })
     .post((req, res) => {
-        // TODO: no RESTful
         var body = req.body;
-        if (typeof body.bookcaseId === 'undefined') {
-            res.status(400);
-            res.json();
-        } else {
-            async.waterfall([
-                (callback) => {
-                    bookModel.create(body.book ? body.book : {}, (err, book) => {
-                        if (err) {
-                            // TODO: handle 400, 407 error
-                            callback(err, null);
-                        } else {
-                            callback(null, book);
-                        }
-                    });
-                },
-                (book, callback) => {
-                    bookcaseModel.findByIdAndUpdate(body.bookcaseId, { '$push': { books: book._id } }).exec((err, raw) => {
-                        if (err) {
-                            callback(err, null);
-                        } else {
-                            callback(null, book);
-                        }
-                    });
-                }
-            ], (err, book) => {
-                if (err) {
-                    // TODO: handle 400, 407 error
-                    res.status(400);
-                    res.json();
-                } else {
-                    res.status(201);
-                    res.json(book);
-                }
-            });
-        }
+        bookModel.create(body ? body : {}, (err, book) => {
+            if (err) {
+                // TODO: handle 400, 407 error
+                res.status(400);
+                res.json();
+            } else {
+                res.status(201);
+                res.json(book);
+            }
+        });
     })
     .put(function(req, res) {
         // not allowed, unless you want to update/replace every resource in the entire collection
-        var statusCode = 405; // 405 METHOD NOT ALLOWED
-        res.status(statusCode);
-        res.json();
-    })
-    .patch(function(req, res) {
-        // not allowed, unless you want to update/modify every resource in the entire collection
         var statusCode = 405; // 405 METHOD NOT ALLOWED
         res.status(statusCode);
         res.json();
@@ -231,59 +199,20 @@ router.route('/:bookId')
             }
         });
     })
-    .patch(function(req, res) {
+    .delete(function(req, res) {
         var bookId = req.params.bookId;
-        var body = req.body;
-        // if (body.isInvalid) 400 BAD REQUEST
         // if (objectId.isNotFound) 404 NOT FOUND
         // if (isNoAuthIntormation) 401 UNAUTHORIZED
         // if (isNoRights) 403 FORBIDDEN
-        bookModel.findByIdAndUpdate(bookId, body).exec((err, raw) => {
+        bookModel.findByIdAndRemove(bookId).exec((err) => {
             if (err) {
-                // TODO: handle 404 error
-                res.status(400);
+                res.status(404);
                 res.json();
             } else {
                 res.status(204);
                 res.json();
             }
         });
-    })
-    .delete(function(req, res) {
-        // TODO: no RESTful
-        var bookId = req.params.bookId;
-        // if (objectId.isNotFound) 404 NOT FOUND
-        // if (isNoAuthIntormation) 401 UNAUTHORIZED
-        // if (isNoRights) 403 FORBIDDEN
-        async.waterfall([
-                (callback) => {
-                    bookcaseModel.update({}, { '$pull': { books: bookId } }, { multi: true }).exec((err, raw) => {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            callback(null);
-                        }
-                    });
-                },
-                (callback) => {
-                    bookModel.findByIdAndRemove(bookId).exec((err) => {
-                        if (err) {
-                            callback(err, null);
-                        } else {
-                            callback(null, null);
-                        }
-                    });
-                }
-            ],
-            (err, result) => {
-                if (err) {
-                    res.status(404);
-                    res.json();
-                } else {
-                    res.status(204);
-                    res.json();
-                }
-            });
     });
 router.route('/:bookId/:chapterId')
     .get((req, res) => {

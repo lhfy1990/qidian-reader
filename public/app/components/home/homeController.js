@@ -16,18 +16,26 @@ angular.module('home')
             this.bookcase = JSON.parse(JSON.stringify(bookcase));
         }
         this.addBookcase = () => {
-            // TODO: no RESTful
+            let bookcase_added = {};
             $http({
                 method: 'POST',
                 url: `/api/bookcases`,
-                data: {
-                    userId: this.user._id
-                }
+                data: {}
             }).then((success) => {
-                let bookcase = success.data;
-                this.user.bookcases.push(bookcase);
+                bookcase_added = success.data;
+                return $http({
+                    method: 'PUT',
+                    url: `/api/users/${this.user._id}`,
+                    data: {
+                        '$push': {
+                            'bookcases': bookcase_added._id
+                        }
+                    }
+                });
+            }).then((success) => {
+                this.user.bookcases.push(bookcase_added);
                 this.setUser(this.user);
-            }, (error) => {});
+            }).catch((error) => { console.log(error); });
         };
         this.updateBookcase = (bookcase) => {
             let updated_bookcase = {
@@ -55,17 +63,26 @@ angular.module('home')
             }, (error) => {});
         };
         this.removeBookcase = (bookcase) => {
-            // TODO: no RESTful
             $http({
                 method: 'DELETE',
                 url: `/api/bookcases/${bookcase._id}`
+            }).then((success) => {
+                return $http({
+                    method: 'PUT',
+                    url: `/api/users/`,
+                    data: {
+                        query: {},
+                        update: { $pull: { 'bookcases': bookcase._id } },
+                        options: { multi: true, upsert: false }
+                    }
+                });
             }).then((success) => {
                 let index_bookcase = this.user.bookcases.indexOf(bookcase);
                 if (index_bookcase !== -1) {
                     this.user.bookcases.splice(index_bookcase, 1);
                 }
                 this.setUser(this.user);
-            }, (error) => {});
+            }).catch((error) => {});
         };
         this.enableEditBook = (book, bookcase) => {
             bookcase.books.forEach((elb, ib, ab) => { elb.isEditMode = false });
@@ -107,21 +124,26 @@ angular.module('home')
         this.addBook = (book, bookcase) => {
             let book_c = JSON.parse(JSON.stringify(book));
             if (!book_c._id) {
-                // TODO: no RESTful
+                console
                 $http({
                     method: 'POST',
                     url: `/api/books/`,
-                    data: {
-                        bookcaseId: bookcase._id,
-                        book: book
-                    }
+                    data: book
                 }).then((success) => {
-                    let book = success.data;
-                    bookcase.books.push(book);
+                    book_c = success.data;
+                    return $http({
+                        method: 'PUT',
+                        url: `/api/bookcases/${bookcase._id}`,
+                        data: {
+                            '$push': { books: book_c._id }
+                        }
+                    });
+                }).then((success) => {
+                    bookcase.books.push(book_c);
                     this.book = {};
                     this.toBookcase = null;
                     this.setUser(this.user);
-                }, (error) => {});
+                }).catch((error) => {});
             } else {
                 $http({
                     method: 'PUT',

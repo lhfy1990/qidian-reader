@@ -50,16 +50,28 @@ router.route('/')
         });
     })
     .put(function(req, res) {
-        // not allowed, unless you want to update/replace every resource in the entire collection
-        var statusCode = 405; // 405 METHOD NOT ALLOWED
-        res.status(statusCode);
-        res.json();
-    })
-    .patch(function(req, res) {
-        // not allowed, unless you want to update/modify every resource in the entire collection
-        var statusCode = 405; // 405 METHOD NOT ALLOWED
-        res.status(statusCode);
-        res.json();
+        // NOTE: allowing users to update/replace every resource in the entire collection
+        var body = req.body;
+        if (typeof body.update === 'undefined' || body.update === null) {
+            res.status(400);
+            res.json();
+        } else {
+            if (typeof body.query === 'undefined' || body.query === null) {
+                body.query = {};
+            }
+            if (typeof body.options === 'undefined' || body.options === null) {
+                body.options = {};
+            }
+            userModel.update(body.query, body.update, body.options).exec((err, raw) => {
+                if (err) {
+                    res.status(400);
+                    res.json();
+                } else {
+                    res.status(204);
+                    res.json();
+                }
+            });
+        }
     })
     .delete(function(req, res) {
         // not allowed, unless you want to delete the whole collection—not often desirable
@@ -70,7 +82,7 @@ router.route('/')
 router.route('/:userId')
     .get((req, res) => {
         var userId = req.params.userId;
-        userModel.findById(userId).populate({path: 'bookcases', populate: {path: 'books'}}).exec((err, user) => {
+        userModel.findById(userId).populate({ path: 'bookcases', populate: { path: 'books' } }).exec((err, user) => {
             if (err) {
                 res.status(400);
                 res.json();
@@ -88,7 +100,7 @@ router.route('/:userId')
             res.status(401);
             res.json();
         } else {
-            userModel.findOne({ username: username }).populate({path: 'bookcases', populate: {path: 'books'}}).exec((err, user) => {
+            userModel.findOne({ username: username }).populate({ path: 'bookcases', populate: { path: 'books' } }).exec((err, user) => {
                 if (err) {
                     res.status(400);
                     res.json();
@@ -108,24 +120,6 @@ router.route('/:userId')
         }
     })
     .put(function(req, res) {
-        var userId = req.params.userId;
-        var body = req.body;
-        // if (body.isInvalid) 400 BAD REQUEST
-        // if (objectId.isNotFound) 404 NOT FOUND
-        // if (isNoAuthIntormation) 401 UNAUTHORIZED
-        // if (isNoRights) 403 FORBIDDEN
-        userModel.findByIdAndUpdate(userId, body).exec((err, raw) => {
-            if (err) {
-                // TODO: handle 404 error
-                res.status(400);
-                res.json();
-            } else {
-                res.status(204);
-                res.json();
-            }
-        });
-    })
-    .patch(function(req, res) {
         var userId = req.params.userId;
         var body = req.body;
         // if (body.isInvalid) 400 BAD REQUEST

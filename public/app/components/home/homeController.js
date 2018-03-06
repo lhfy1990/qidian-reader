@@ -14,7 +14,31 @@ angular.module('home')
             this.user.bookcases.forEach((elb, ib, ab) => { elb.isEditMode = false });
             bookcase.isEditMode = true;
             this.bookcase = JSON.parse(JSON.stringify(bookcase));
-        }
+        };
+        this.toggleBookcase = (bookcase) => {
+            if (bookcase.isExpended) {
+                bookcase.isExpended = false;
+            } else {
+                bookcase.books.forEach((elb, ib, ab) => {
+                    $http({
+                        method: 'GET',
+                        url: `/api/books/${elb.bId}`
+                    }).then((success) => {
+                        let book = success.data;
+                        console.log(book);
+                        elb.chapterTotalCnt = book.chapterTotalCnt;
+                        elb.loginStatus = book.loginStatus;
+                        if (book.hasRead === 1) {
+                            let chapters = [];
+                            book.vs.forEach((elv, iv, av) => { chapters = chapters.concat(elv.cs); });
+                            elb.hasReadCnt = chapters.findIndex((elc, ic, ac) => { return elc.id === book.readChapterId; }) + 1;
+                        }
+                    }, (error) => { elb.loginStatus = 0 });
+                });
+                this.user.bookcases.forEach((elbc, ibc, abc) => { elbc.isExpended = false });
+                bookcase.isExpended = true;
+            }
+        };
         this.addBookcase = () => {
             let bookcase_added = {};
             $http({

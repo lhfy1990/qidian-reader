@@ -84,8 +84,8 @@ router.route('/')
     });
 router.route('/:bookId')
     .get((req, res) => {
-        var cookie = req.headers.cookie;
-        var _csrfToken = req.cookies._csrfToken;
+        var cookie = typeof req.headers.cookie === 'undefined' ? '' : req.headers.cookie;
+        var _csrfToken = typeof req.cookies._csrfToken === 'undefined' ? '' : req.cookies._csrfToken;
         var bookId = parseInt(req.params.bookId);
         if (isNaN(bookId)) {
             res.status(400);

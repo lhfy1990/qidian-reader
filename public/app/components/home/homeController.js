@@ -25,7 +25,6 @@ angular.module('home')
                         url: `/api/books/${elb.bId}`
                     }).then((success) => {
                         let book = success.data;
-                        console.log(book);
                         elb.chapterTotalCnt = book.chapterTotalCnt;
                         elb.loginStatus = book.loginStatus;
                         if (book.hasRead === 1) {
@@ -59,7 +58,7 @@ angular.module('home')
             }).then((success) => {
                 this.user.bookcases.push(bookcase_added);
                 this.setUser(this.user);
-            }).catch((error) => { console.log(error); });
+            }).catch((error) => {});
         };
         this.updateBookcase = (bookcase) => {
             let updated_bookcase = {
@@ -148,7 +147,6 @@ angular.module('home')
         this.addBook = (book, bookcase) => {
             let book_c = JSON.parse(JSON.stringify(book));
             if (!book_c._id) {
-                console
                 $http({
                     method: 'POST',
                     url: `/api/books/`,

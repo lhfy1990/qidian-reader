@@ -27,10 +27,13 @@ angular.module('home')
                         let book = success.data;
                         elb.chapterTotalCnt = book.chapterTotalCnt;
                         elb.loginStatus = book.loginStatus;
-                        if (book.hasRead === 1) {
-                            let chapters = [];
-                            book.vs.forEach((elv, iv, av) => { chapters = chapters.concat(elv.cs); });
-                            elb.hasReadCnt = chapters.findIndex((elc, ic, ac) => { return elc.id === book.readChapterId; }) + 1;
+                        if (book.loginStatus === 1) {
+                            elb.hasReadCnt = 0;
+                            if (book.hasRead === 1) {
+                                let chapters = [];
+                                book.vs.forEach((elv, iv, av) => { chapters = chapters.concat(elv.cs); });
+                                elb.hasReadCnt = chapters.findIndex((elc, ic, ac) => { return elc.id === book.readChapterId; }) + 1;
+                            }
                         }
                     }, (error) => { elb.loginStatus = 0 });
                 });

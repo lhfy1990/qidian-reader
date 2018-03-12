@@ -35,7 +35,7 @@
                             </div>
                             <div class="media-body">
                                 <a href="#!books/{{book.bId}}">
-                                    <h4 class="media-heading">{{book.name}}  <small>{{book.author}}</small><small class="label pull-right" ng-class="{'label-success': book.loginStatus===1&&book.chapterTotalCnt>book.hasReadCnt, 'label-default': book.loginStatus===1&&book.chapterTotalCnt===book.hasReadCnt, 'label-warning': book.loginStatus===0}">{{book.loginStatus===0?'登陆过期':book.chapterTotalCnt-book.hasReadCnt+' 新'}}</small>
+                                    <h4 class="media-heading">{{book.name}}  <small>{{book.author}}</small><small class="label pull-right" ng-class="{'label-success': book.loginStatus===1&&book.chapterTotalCnt>book.hasReadCnt, 'label-default': book.loginStatus===1&&book.chapterTotalCnt===book.hasReadCnt, 'label-warning': book.loginStatus===0}">{{book.loginStatus===0?'登陆过期':book.chapterTotalCnt-book.hasReadCnt+' 未读'}}</small>
                                     </h4>
                                 </a>
                                 <div class="input-group input-group-sm" ng-if="bookcase.isEditMode">

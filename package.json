@@ -13,9 +13,11 @@
   "dependencies": {
     "async": "^2.6.0",
     "body-parser": "^1.17.2",
+    "bower": "^1.8.4",
     "cheerio": "^1.0.0-rc.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.15.3",
+    "express-queue": "0.0.12",
     "mongoose": "^5.0.5"
   },
   "repository": {

@@ -1,6 +1,7 @@
 // requires
 var path = require('path');
 var express = require('express');
+var queue = require('express-queue');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var app = express();
@@ -13,10 +14,11 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(queue({ activeLimit: 1, queuedLimit: -1}));
 var port = process.env.PORT || 8080;
 
 // mongoose.set('debug', true);
-// var mongodb = 'mongodb://localhost/qidian-reader';
+// var mongodb = 'mongodb://qruser:qruser@localhost/qidian-reader';
 var mongodb = 'mongodb://qruser:qruser@mongodb/qidian-reader';
 mongoose.connect(mongodb, { autoIndex: false });
 var db = mongoose.connection;

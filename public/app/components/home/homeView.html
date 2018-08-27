@@ -25,7 +25,7 @@
                     </form>
                 </div>
                 <div class="list-group" ng-if="bookcase.isExpended">
-                    <div class="list-group-item" ng-repeat="book in bookcase.books">
+                    <div class="list-group-item" ng-repeat="book in bookcase.books | orderBy: '-uT'">
                         <div class="media">
                             <div class="media-left media-middle" ng-if="bookcase.isEditMode">
                                 <div class="btn-group-vertical btn-group-sm">
@@ -35,7 +35,7 @@
                             </div>
                             <div class="media-body">
                                 <a href="#!books/{{book.bId}}">
-                                    <h4 class="media-heading">{{book.name}}  <small>{{book.author}}</small><small class="label pull-right" ng-class="{'label-success': book.loginStatus===1&&book.chapterTotalCnt>book.hasReadCnt, 'label-default': book.loginStatus===1&&book.chapterTotalCnt===book.hasReadCnt, 'label-warning': book.loginStatus===0}" ng-style="{opacity: 0.25+(book.chapterTotalCnt-book.hasReadCnt)/75}">{{book.loginStatus===0?'登陆过期':book.chapterTotalCnt-book.hasReadCnt+' 未读'}}</small>
+                                    <h4 class="media-heading">{{book.name}}  <small>{{book.author}}</small><small class="label pull-right" ng-class="{'label-success': book.loginStatus===1&&book.chapterTotalCnt>book.hasReadCnt, 'label-default': book.loginStatus===1&&book.chapterTotalCnt===book.hasReadCnt, 'label-warning': book.loginStatus===0}" ng-style="{opacity: 0.25+(book.chapterTotalCnt-book.hasReadCnt)/75}">{{book.loginStatus===0?'登陆过期':book.chapterTotalCnt-book.hasReadCnt+' 未读'}}</small><small>&nbsp;{{book.uT | date : 'yy/M/d H:m:s'}}</small>
                                     </h4>
                                 </a>
                                 <div class="input-group input-group-sm" ng-if="bookcase.isEditMode">

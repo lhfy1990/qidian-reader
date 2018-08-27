@@ -29,9 +29,11 @@ angular.module('home')
                         elb.loginStatus = book.loginStatus;
                         if (book.loginStatus === 1) {
                             elb.hasReadCnt = 0;
+                            let chapters = [];
+                            book.vs.forEach((elv, iv, av) => { chapters = chapters.concat(elv.cs); });
+                            chapters.sort((c1, c2) => { let uT1 = new Date(c1.uT), uT2 = new Date(c2.uT); return uT1 - uT2;});
+                            elb.uT = chapters.length > 0 ? new Date(chapters[chapters.length -1].uT) : new Date();
                             if (book.hasRead === 1) {
-                                let chapters = [];
-                                book.vs.forEach((elv, iv, av) => { chapters = chapters.concat(elv.cs); });
                                 elb.hasReadCnt = chapters.findIndex((elc, ic, ac) => { return elc.id === book.readChapterId; }) + 1;
                             }
                         }
